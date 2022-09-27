@@ -68,8 +68,8 @@ def to_signup():
     db.session.add(new_user)
     db.session.commit()
 
-    access_token = create_access_token(identity=email)
-    return jsonify(access_token=access_token)
+    response_body = "te has loggeado tío"
+    return jsonify(response_body)
     
 # Create a route to authenticate your users and return JWTs. The
 # create_access_token() function is used to actually generate the JWT.
@@ -90,12 +90,20 @@ def login():
 
 # Protect a route with jwt_required, which will kick out requests
 # without a valid JWT present.
-@app.route("/protected", methods=["GET"])
+@app.route("/profile", methods=["GET"])
 @jwt_required()
 def protected():
     # Access the identity of the current user with get_jwt_identity
     current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200
+    print(current_user)
+    user = User.query.filter_by(email= current_user).first()
+    response_body = {
+        "email": user.email,
+        "password": user.password
+    }
+
+
+    return jsonify(response_body), 200
 
 
 # this only runs if `$ python src/main.py` is executed
